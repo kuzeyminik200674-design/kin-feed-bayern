@@ -1,0 +1,29 @@
+{
+  "source": "opendata-oepnv.de (DELFI)",
+  "license": "CC BY",
+  "license_url": "http://opendefinition.org/licenses/cc-by/",
+  "attribution": "© DELFI e.V.",
+  "scope": "bayern-rail",
+  "generated_at": "2026-06-09T14:49:19.092Z",
+  "feed_version": "2026-05-16",
+  "feed_start_date": "20260502",
+  "feed_end_date": "20261212",
+  "counts": {
+    "routes": 250,
+    "trips": 28602,
+    "stops": 3408,
+    "stop_times": 375219,
+    "calendar": 3519,
+    "calendar_dates": 81058,
+    "agencies": 40
+  },
+  "sizes_gz_bytes": {
+    "stop_times": 2333107,
+    "stops": 70075,
+    "routes": 1584,
+    "trips": 107590,
+    "calendar": 10871,
+    "calendar_dates": 210250,
+    "agencies": 641
+  }
+}
