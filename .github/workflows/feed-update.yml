@@ -26,8 +26,22 @@ jobs:
       - name: bsdtar installieren (ZIP-Extraktion; GNU tar kann keine ZIPs)
         run: sudo apt-get update && sudo apt-get install -y libarchive-tools
 
-      - name: DELFI-Gesamt-ZIP ziehen (stabile URL, kein Login)
-        run: curl -fSL --retry 3 --max-time 1200 -o delfi.zip https://mobi.nrw/gtfs-deutschland-gesamt.zip
+      - name: DELFI-Gesamt-ZIP ziehen (mobi.nrw, Cookie-Jar fuer TYPO3-Redirect)
+        run: curl -fSL -c jar.txt -b jar.txt --retry 3 --max-time 1200 -o delfi.zip "https://mobi.nrw/gtfs-deutschland-gesamt.zip"
+
+      - name: ZIP-Validierung (echtes ZIP? sonst Abbruch VOR dem Filter)
+        run: |
+          SIZE=$(stat -c%s delfi.zip)
+          echo "delfi.zip: $SIZE bytes"
+          if [ "$SIZE" -lt 1048576 ]; then
+            echo "::error::delfi.zip nur $SIZE bytes (<1 MB) — vermutlich HTML-Fehlfang statt ZIP."
+            exit 1
+          fi
+          if [ "$(head -c 2 delfi.zip)" != "PK" ]; then
+            echo "::error::delfi.zip beginnt nicht mit 'PK' — kein gueltiges ZIP."
+            exit 1
+          fi
+          echo "OK: gueltiges ZIP ($SIZE bytes)."
 
       - name: Filtern (Bayern-Schiene) — Hard-Gate bricht bei Fehler ab
         run: node --max-old-space-size=4096 scripts/filter-delfi-bayern-rail.mjs "$GITHUB_WORKSPACE/delfi.zip"
