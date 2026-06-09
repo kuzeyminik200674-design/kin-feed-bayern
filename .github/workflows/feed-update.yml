@@ -1,0 +1,53 @@
+name: Weekly DELFI Bayern-Schiene Feed
+
+on:
+  schedule:
+    - cron: '0 4 * * 2'      # Dienstag 04:00 UTC (DELFI aktualisiert montags + Puffer)
+  workflow_dispatch: {}        # manuell anstoßbar
+
+permissions:
+  contents: write              # GITHUB_TOKEN darf ins selbe Repo pushen — kein PAT
+
+concurrency:
+  group: feed-update
+  cancel-in-progress: false
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: bsdtar installieren (ZIP-Extraktion; GNU tar kann keine ZIPs)
+        run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+
+      - name: DELFI-Gesamt-ZIP ziehen (stabile URL, kein Login)
+        run: curl -fSL --retry 3 --max-time 1200 -o delfi.zip https://mobi.nrw/gtfs-deutschland-gesamt.zip
+
+      - name: Filtern (Bayern-Schiene) — Hard-Gate bricht bei Fehler ab
+        run: node --max-old-space-size=4096 scripts/filter-delfi-bayern-rail.mjs "$GITHUB_WORKSPACE/delfi.zip"
+
+      - name: Ergebnis nach feed/ übernehmen
+        run: |
+          mkdir -p feed
+          cp scripts/delfi-out/*.csv.gz feed/
+          cp scripts/delfi-out/meta.json feed/
+
+      - name: Nur committen wenn sich die Daten (*.csv.gz) geändert haben
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add feed/*.csv.gz
+          if git diff --cached --quiet; then
+            echo "Keine Daten-Änderung — kein Commit."
+            exit 0
+          fi
+          git add feed/meta.json
+          VER=$(node -e "process.stdout.write(require('./feed/meta.json').feed_version)")
+          git commit -m "chore(feed): DELFI Bayern-Schiene Update ($VER)"
+          git push
