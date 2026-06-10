@@ -8,7 +8,7 @@
 // Strategie laut Docs/DELFI-Inventur.md:
 //   - Bayern: stop_id-Praefix de:09 (amtl. Gemeindeschluessel, 09 = Bayern),
 //     inkl. Normalisierung der ~12 IDs mit fehlender fuehrender Null (de:9... -> 09...).
-//   - Schiene-Whitelist: route_type in {2,101,102,103,106,109}. KEIN Bus.
+//   - Schiene-Whitelist: route_type in {2,100,101,102,103,106,109}. KEIN Bus.
 //   - Border-Crossing: Trip komplett behalten, sobald >=1 Halt in Bayern liegt.
 //
 // SCOPE (Product Owner): NUR SCHIENE. SEV/Bus kommt spaeter als eigenes Modul.
@@ -42,7 +42,9 @@ const WORK_DIR = join(tmpdir(), 'delfi-filter-work');
 const REPORT = join(OUT_DIR, '_report.txt');
 
 // Schiene-Whitelist (Docs/DELFI-Inventur.md 4.3). NUR Schiene, kein Bus.
-const RAIL_TYPES = new Set(['2', '101', '102', '103', '106', '109']);
+// 100 = "Railway Service" (DELFI-Umklassifizierung ab ~Juni 2026; RE/RB/S wandern
+// von 106/109 nach 100 — verifiziert echte Schiene, inkl. RE 14/RE 10/RB 58/S-Bahn).
+const RAIL_TYPES = new Set(['2', '100', '101', '102', '103', '106', '109']);
 // Bekannte NICHT-Schiene-Codes (zur Klassifikation der Verteilung).
 const KNOWN_NONRAIL = new Set([
   '0', '1', '3', '4', '5', '6', '7',           // GTFS-Basis (Tram/U-Bahn/Bus/Faehre/...)
