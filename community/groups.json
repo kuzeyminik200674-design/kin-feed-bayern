@@ -1,0 +1,23 @@
+{
+  "version": "2026-06-16",
+  "gruppen": [
+    {
+      "id": "test-kin-assistant",
+      "name": "KIN ASSISTANT (Test)",
+      "region": "Test",
+      "link": "https://chat.whatsapp.com/JdYKw5Y6lDB9dVVCxUPyf6",
+      "mitglieder": 2,
+      "voll": false,
+      "aktiv": true
+    },
+    {
+      "id": "db-regio-bayern",
+      "name": "DB Regio Bayern",
+      "region": "Bayernweit",
+      "link": "https://chat.whatsapp.com/IYQEKvUmbc8IEj4UGPKUMB",
+      "mitglieder": 0,
+      "voll": false,
+      "aktiv": false
+    }
+  ]
+}
