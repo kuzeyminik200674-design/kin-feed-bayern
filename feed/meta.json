@@ -4,26 +4,26 @@
   "license_url": "http://opendefinition.org/licenses/cc-by/",
   "attribution": "© DELFI e.V.",
   "scope": "bayern-rail",
-  "generated_at": "2026-08-11T04:57:48.296Z",
-  "feed_version": "2026-08-08",
-  "feed_start_date": "20260725",
+  "generated_at": "2026-09-29T10:12:07.161Z",
+  "feed_version": "2026-09-26",
+  "feed_start_date": "20260912",
   "feed_end_date": "20261212",
   "counts": {
-    "routes": 249,
-    "trips": 28221,
-    "stops": 3482,
-    "stop_times": 367375,
-    "calendar": 3393,
-    "calendar_dates": 57279,
-    "agencies": 36
+    "routes": 258,
+    "trips": 25191,
+    "stops": 3486,
+    "stop_times": 321643,
+    "calendar": 2870,
+    "calendar_dates": 37419,
+    "agencies": 40
   },
   "sizes_gz_bytes": {
-    "stop_times": 2250144,
-    "stops": 70865,
-    "routes": 1681,
-    "trips": 106056,
-    "calendar": 10572,
-    "calendar_dates": 150279,
-    "agencies": 589
+    "stop_times": 2012226,
+    "stops": 71386,
+    "routes": 1733,
+    "trips": 95184,
+    "calendar": 9209,
+    "calendar_dates": 97512,
+    "agencies": 619
   }
 }
