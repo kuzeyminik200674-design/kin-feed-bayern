@@ -235,7 +235,7 @@ if (robotSchlecht || waechterSchlecht) {
   zeilen.push('- **Nachsehen:** GitHub → *Actions* → den letzten **roten** Lauf öffnen und die Meldung im fehlgeschlagenen Schritt lesen.');
   zeilen.push('- **Wenn der Spiegel wieder liefert:** den Lauf von Hand starten (*Actions* → *Weekly DELFI Bayern-Schiene Feed* → *Run workflow*).');
   zeilen.push('');
-  zeilen.push('Häufigste Ursache: der Bezugs-Spiegel (`mobi.nrw`) antwortet nicht oder liefert eine Fehlerseite statt Daten.');
+  zeilen.push('Häufigste Ursache, wenn oben kein anderer Grund steht: der Bezugs-Spiegel (`mobi.nrw`) antwortet nicht oder liefert eine Fehlerseite statt Daten.');
 }
 
 zeilen.push('');

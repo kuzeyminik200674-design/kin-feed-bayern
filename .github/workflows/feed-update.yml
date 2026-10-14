@@ -12,7 +12,7 @@ name: Weekly DELFI Bayern-Schiene Feed
 
 on:
   schedule:
-    - cron: '0 4 * * 2'      # Dienstag 04:00 UTC (DELFI aktualisiert montags + Puffer)
+    - cron: '23 4 * * 2'     # Dienstag 04:23 UTC (krumme Minute — GitHub verzoegert volle Stunden)
   workflow_dispatch:          # manuell anstoßbar (auch fuer Tests)
     inputs:
       min_prozent:
