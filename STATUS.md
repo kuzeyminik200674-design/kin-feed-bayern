@@ -1,13 +1,21 @@
 # Fahrplan-Roboter — Status
 
 > **Diese Datei schreibt der Roboter selbst** — bitte nicht von Hand ändern.
-> Zuletzt aktualisiert: **14.10.2026, 20:06 Uhr** (Berliner Zeit)
+> Zuletzt aktualisiert: **14.10.2026, 20:47 Uhr** (Berliner Zeit)
 
 ---
 
 ## 1. Roboter-Lauf (dienstags 04:00 UTC)
 
-**Noch kein Lauf protokolliert.** Der erste Lauf schreibt hier seinen Status hinein.
+⚠️ **Keine Änderung — es gab nichts Neues** (kein Fehler)
+
+| | |
+|---|---|
+| Zeitpunkt | 14.10.2026, 20:47 Uhr |
+| Fahrplan-Stand in `feed/` | 2026-10-10 (vor 4 Tagen) |
+| Daten | 25.845 Fahrten · 250 Linien · 3.501 Halte |
+| Nach `feed/` übernommen | nein |
+| Plausibilitäts-Prüfung | an (Schwelle 50 %) |
 
 ---
 

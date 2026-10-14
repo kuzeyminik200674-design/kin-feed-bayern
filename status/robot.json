@@ -1,0 +1,12 @@
+{
+  "letzter_lauf": "2026-10-14T18:47:32.729Z",
+  "ergebnis": "keine_aenderung",
+  "grund": null,
+  "pruefung": "an",
+  "min_prozent": 50,
+  "daten_uebernommen": false,
+  "feed_version": "2026-10-10",
+  "fahrten": 25845,
+  "linien": 250,
+  "halte": 3501
+}
