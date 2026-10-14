@@ -1,21 +1,23 @@
 # Fahrplan-Roboter — Status
 
 > **Diese Datei schreibt der Roboter selbst** — bitte nicht von Hand ändern.
-> Zuletzt aktualisiert: **14.10.2026, 20:47 Uhr** (Berliner Zeit)
+> Zuletzt aktualisiert: **14.10.2026, 20:52 Uhr** (Berliner Zeit)
 
 ---
 
 ## 1. Roboter-Lauf (dienstags 04:00 UTC)
 
-⚠️ **Keine Änderung — es gab nichts Neues** (kein Fehler)
+❌ **FEHLGESCHLAGEN — es kamen keine brauchbaren Daten**
 
 | | |
 |---|---|
-| Zeitpunkt | 14.10.2026, 20:47 Uhr |
+| Zeitpunkt | 14.10.2026, 20:52 Uhr |
 | Fahrplan-Stand in `feed/` | 2026-10-10 (vor 4 Tagen) |
 | Daten | 25.845 Fahrten · 250 Linien · 3.501 Halte |
 | Nach `feed/` übernommen | nein |
-| Plausibilitäts-Prüfung | an (Schwelle 50 %) |
+| Plausibilitäts-Prüfung | an (Schwelle 200 %) |
+
+**Grund (Klartext):** Der neue Fahrplan hat nur 25.845 Fahrten — das sind 100,0 % des letzten guten (25.845). Das liegt unter der Schwelle von 200 %. feed/ wird NICHT überschrieben; der letzte gute Fahrplan bleibt stehen.
 
 ---
 
@@ -24,6 +26,17 @@
 Der Wächter lädt nichts herunter. Er prüft nur, ob der Fahrplan in `feed/` zu alt geworden ist — also ob der Dienstags-Lauf heimlich nicht mehr stattfindet.
 
 **Noch kein Wächter-Lauf protokolliert.**
+
+---
+
+## ⚠️ Was jetzt zu tun ist
+
+- **Die App läuft weiter.** In `feed/` steht unverändert der letzte gute Fahrplan (Stand **2026-10-10**, vor 4 Tagen) — sie liefert ihn weiter aus, nur eben mit älteren Daten.
+- **Nichts überstürzen.** Kein Handeln am Handy, kein Update, keine Einstellung.
+- **Nachsehen:** GitHub → *Actions* → den letzten **roten** Lauf öffnen und die Meldung im fehlgeschlagenen Schritt lesen.
+- **Wenn der Spiegel wieder liefert:** den Lauf von Hand starten (*Actions* → *Weekly DELFI Bayern-Schiene Feed* → *Run workflow*).
+
+Häufigste Ursache: der Bezugs-Spiegel (`mobi.nrw`) antwortet nicht oder liefert eine Fehlerseite statt Daten.
 
 ---
 
