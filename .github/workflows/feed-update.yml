@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: checkout
 
       - name: 'Grund notieren: Code konnte nicht geladen werden'
@@ -47,9 +47,9 @@ jobs:
         run: |
           echo "Der Code konnte nicht geladen werden (Schritt 'checkout') — der Roboter konnte gar nicht starten." > "$RUNNER_TEMP/grund.txt"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: bsdtar installieren (ZIP-Extraktion; GNU tar kann keine ZIPs)
         run: sudo apt-get update && sudo apt-get install -y libarchive-tools
@@ -124,6 +124,11 @@ jobs:
           git add feed/*.csv.gz
           if git diff --cached --quiet; then
             echo "Keine Daten-Änderung — kein Commit."
+            # feed/meta.json enthält 'generated_at' und ist damit bei JEDEM Lauf verändert.
+            # Ohne dieses Aufräumen bleibt der Arbeitsbaum schmutzig und blockiert später
+            # den 'git pull --rebase' beim Statuszettel ("You have unstaged changes").
+            git checkout -- feed/
+            echo "Arbeitsbaum aufgeräumt: feed/ auf den Stand im Repo zurückgesetzt."
             echo "geaendert=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -158,7 +163,7 @@ jobs:
           git commit -m "chore(status): Roboter-Status ($(date -u +%Y-%m-%d))"
           geschafft=false
           for i in 1 2 3; do
-            if git pull --rebase --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
+            if git pull --rebase --autostash --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
               geschafft=true
               break
             fi

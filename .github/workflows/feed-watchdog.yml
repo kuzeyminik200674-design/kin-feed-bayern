@@ -33,12 +33,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: checkout
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Fahrplan-Alter prüfen
         id: alter
@@ -77,7 +77,7 @@ jobs:
           git commit -m "chore(status): Wächter-Status ($(date -u +%Y-%m-%d))"
           geschafft=false
           for i in 1 2 3; do
-            if git pull --rebase --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
+            if git pull --rebase --autostash --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
               geschafft=true
               break
             fi
