@@ -1,7 +1,7 @@
 # Fahrplan-Roboter — Status
 
 > **Diese Datei schreibt der Roboter selbst** — bitte nicht von Hand ändern.
-> Zuletzt aktualisiert: **14.10.2026, 20:52 Uhr** (Berliner Zeit)
+> Zuletzt aktualisiert: **14.10.2026, 20:56 Uhr** (Berliner Zeit)
 
 ---
 
@@ -25,7 +25,16 @@
 
 Der Wächter lädt nichts herunter. Er prüft nur, ob der Fahrplan in `feed/` zu alt geworden ist — also ob der Dienstags-Lauf heimlich nicht mehr stattfindet.
 
-**Noch kein Wächter-Lauf protokolliert.**
+❌ **ALARM — der Fahrplan ist zu alt**
+
+| | |
+|---|---|
+| Zeitpunkt | 14.10.2026, 20:56 Uhr |
+| Fahrplan-Stand in `feed/` | 2026-10-10 (4 Tage alt) |
+| Erlaubt | höchstens 1 Tag |
+| Laut Daten gültig bis | 2026-12-12 |
+
+**Grund (Klartext):** Der Fahrplan ist 4 Tage alt (Stand 2026-10-10, erlaubt sind 1). Der Dienstags-Roboter hat offenbar keine neuen Daten geliefert.
 
 ---
 

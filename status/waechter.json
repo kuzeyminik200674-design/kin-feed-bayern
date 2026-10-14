@@ -1,0 +1,10 @@
+{
+  "letzter_lauf": "2026-10-14T18:56:54.122Z",
+  "schwelle_tage": 1,
+  "feed_version": "2026-10-10",
+  "fahrten": 25845,
+  "gueltig_bis": "2026-12-12",
+  "alter_tage": 4,
+  "ergebnis": "alarm",
+  "grund": "Der Fahrplan ist 4 Tage alt (Stand 2026-10-10, erlaubt sind 1). Der Dienstags-Roboter hat offenbar keine neuen Daten geliefert."
+}
