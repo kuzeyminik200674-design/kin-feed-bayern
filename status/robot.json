@@ -1,9 +1,9 @@
 {
-  "letzter_lauf": "2026-10-14T18:52:54.769Z",
-  "ergebnis": "fehlgeschlagen",
-  "grund": "Der neue Fahrplan hat nur 25.845 Fahrten — das sind 100,0 % des letzten guten (25.845). Das liegt unter der Schwelle von 200 %. feed/ wird NICHT überschrieben; der letzte gute Fahrplan bleibt stehen.",
+  "letzter_lauf": "2026-10-14T19:02:31.966Z",
+  "ergebnis": "keine_aenderung",
+  "grund": null,
   "pruefung": "an",
-  "min_prozent": 200,
+  "min_prozent": 50,
   "daten_uebernommen": false,
   "feed_version": "2026-10-10",
   "fahrten": 25845,
