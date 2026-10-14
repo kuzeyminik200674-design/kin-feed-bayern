@@ -1,9 +1,31 @@
 name: Weekly DELFI Bayern-Schiene Feed
 
+# Der Roboter holt dienstags die bundesweiten DELFI-Daten, filtert Bayern-Schiene
+# heraus und legt sie in feed/ ab. Die App holt sie dort 1x/Tag ab.
+#
+# NEU (14.10.2026) — damit ein Fehlschlag nicht mehr still bleibt:
+#   1. Plausibilitäts-Bremse: leere/zu kleine Daten brechen ab, BEVOR feed/
+#      überschrieben wird (lieber alter Fahrplan als leerer Fahrplan).
+#   2. Grund-Notizen: jeder kritische Schritt hinterlaesst einen Klartext-Grund.
+#   3. Statuszettel: der letzte Schritt laeuft IMMER (auch nach einem Fehlschlag)
+#      und schreibt STATUS.md — dort steht, was passiert ist, in Klartext.
+
 on:
   schedule:
     - cron: '0 4 * * 2'      # Dienstag 04:00 UTC (DELFI aktualisiert montags + Puffer)
-  workflow_dispatch: {}        # manuell anstoßbar
+  workflow_dispatch:          # manuell anstoßbar (auch fuer Tests)
+    inputs:
+      min_prozent:
+        description: 'Plausibilitaets-Schwelle in Prozent (Standard 50; hoeher = strenger — fuer Tests)'
+        required: false
+        default: '50'
+      pruefung:
+        description: 'Plausibilitaets-Pruefung (fuer Tests auf "aus" stellen)'
+        type: choice
+        options:
+          - an
+          - aus
+        default: an
 
 permissions:
   contents: write              # GITHUB_TOKEN darf ins selbe Repo pushen — kein PAT
@@ -18,6 +40,12 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        id: checkout
+
+      - name: 'Grund notieren: Code konnte nicht geladen werden'
+        if: failure() && steps.checkout.outcome == 'failure'
+        run: |
+          echo "Der Code konnte nicht geladen werden (Schritt 'checkout') — der Roboter konnte gar nicht starten." > "$RUNNER_TEMP/grund.txt"
 
       - uses: actions/setup-node@v4
         with:
@@ -27,9 +55,16 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libarchive-tools
 
       - name: DELFI-Gesamt-ZIP ziehen (mobi.nrw, Cookie-Jar fuer TYPO3-Redirect)
+        id: download
         run: curl -fSL -c jar.txt -b jar.txt --retry 3 --max-time 1200 -o delfi.zip "https://mobi.nrw/gtfs-deutschland-gesamt.zip"
 
+      - name: 'Grund notieren: keine Daten bekommen'
+        if: failure() && steps.download.outcome == 'failure'
+        run: |
+          echo "Es kamen KEINE Daten an — der Download vom Spiegel mobi.nrw ist fehlgeschlagen (3 Versuche)." > "$RUNNER_TEMP/grund.txt"
+
       - name: ZIP-Validierung (echtes ZIP? sonst Abbruch VOR dem Filter)
+        id: zip_pruefung
         run: |
           SIZE=$(stat -c%s delfi.zip)
           echo "delfi.zip: $SIZE bytes"
@@ -43,8 +78,37 @@ jobs:
           fi
           echo "OK: gueltiges ZIP ($SIZE bytes)."
 
+      - name: 'Grund notieren: kein gültiges Paket'
+        if: failure() && steps.zip_pruefung.outcome == 'failure'
+        run: |
+          echo "Die geladene Datei war kein gueltiges Fahrplan-Paket (zu klein oder falsches Format) — vermutlich hat der Spiegel eine Fehlerseite geschickt." > "$RUNNER_TEMP/grund.txt"
+
       - name: Filtern (Bayern-Schiene) — Hard-Gate bricht bei Fehler ab
+        id: filter
         run: node --max-old-space-size=4096 scripts/filter-delfi-bayern-rail.mjs "$GITHUB_WORKSPACE/delfi.zip"
+
+      - name: 'Grund notieren: Filtern abgebrochen'
+        if: failure() && steps.filter.outcome == 'failure'
+        run: |
+          echo "Das Filtern der Daten ist abgebrochen — Einzelheiten stehen im Protokoll dieses Schritts." > "$RUNNER_TEMP/grund.txt"
+
+      # ── NEU: Plausibilitäts-Bremse — läuft VOR dem Übernehmen nach feed/ ──
+      - name: Plausibilitäts-Bremse (leere/zu kleine Daten → Abbruch VOR dem Übernehmen)
+        id: pruefe
+        if: inputs.pruefung != 'aus'
+        run: |
+          node scripts/pruefe-fahrplan.mjs \
+            scripts/delfi-out/meta.json \
+            feed/meta.json \
+            --min-prozent "${{ inputs.min_prozent || '50' }}" \
+            --grund-datei "$RUNNER_TEMP/grund.txt"
+
+      - name: 'Grund notieren: Daten unplausibel'
+        if: failure() && steps.pruefe.outcome == 'failure'
+        run: |
+          if [ ! -s "$RUNNER_TEMP/grund.txt" ]; then
+            echo "Die neuen Daten waren unplausibel — sie wurden NICHT uebernommen." > "$RUNNER_TEMP/grund.txt"
+          fi
 
       - name: Ergebnis nach feed/ übernehmen
         run: |
@@ -53,15 +117,55 @@ jobs:
           cp scripts/delfi-out/meta.json feed/
 
       - name: Nur committen wenn sich die Daten (*.csv.gz) geändert haben
+        id: feed_commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add feed/*.csv.gz
           if git diff --cached --quiet; then
             echo "Keine Daten-Änderung — kein Commit."
+            echo "geaendert=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git add feed/meta.json
           VER=$(node -e "process.stdout.write(require('./feed/meta.json').feed_version)")
           git commit -m "chore(feed): DELFI Bayern-Schiene Update ($VER)"
           git push
+          echo "geaendert=true" >> "$GITHUB_OUTPUT"
+
+      # ── NEU: Statuszettel — läuft IMMER, auch nach einem Fehlschlag ──────
+      - name: Statuszettel schreiben (läuft IMMER)
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+          DATEN_GEAENDERT: ${{ steps.feed_commit.outputs.geaendert }}
+          PRUEFUNG: ${{ inputs.pruefung || 'an' }}
+          MIN_PROZENT: ${{ inputs.min_prozent || '50' }}
+        run: |
+          if [ ! -d .git ]; then
+            echo "Kein Repo vorhanden — Statuszettel kann nicht geschrieben werden."
+            exit 0
+          fi
+          node scripts/status-schreiben.mjs --quelle robot --grund-datei "$RUNNER_TEMP/grund.txt"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add STATUS.md
+          if [ -d status ]; then git add status; fi
+          if git diff --cached --quiet; then
+            echo "Statuszettel unverändert — kein Commit."
+            exit 0
+          fi
+          git commit -m "chore(status): Roboter-Status ($(date -u +%Y-%m-%d))"
+          geschafft=false
+          for i in 1 2 3; do
+            if git pull --rebase --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
+              geschafft=true
+              break
+            fi
+            sleep 3
+          done
+          if [ "$geschafft" != "true" ]; then
+            echo "::error::Der Statuszettel konnte nicht abgelegt werden (3 Versuche)."
+            exit 1
+          fi
+          echo "Statuszettel abgelegt."

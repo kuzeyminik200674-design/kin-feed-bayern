@@ -1,0 +1,90 @@
+name: Fahrplan-Wächter (samstags)
+
+# Zweiter, winziger Termin (NEU 14.10.2026).
+#
+# WARUM ES IHN GIBT: Der Statuszettel des Dienstags-Roboters hilft nur, wenn der
+# Roboter auch laeuft. Findet der Lauf GAR NICHT statt (GitHub-Stoerung, von
+# GitHub abgeschalteter Termin), schweigt alles — und der Fahrplan in der App
+# altert still. Dieser Wächter stellt nur EINE Frage:
+#
+#     „Ist der Fahrplan in feed/ zu alt geworden — oder gar nicht mehr gueltig?"
+#
+# Er laedt NICHTS herunter. Dauer: wenige Sekunden.
+
+on:
+  schedule:
+    - cron: '0 6 * * 6'      # Samstag 06:00 UTC
+  workflow_dispatch:          # manuell anstoßbar (auch fuer Tests)
+    inputs:
+      max_tage:
+        description: 'Alarm, wenn der Fahrplan aelter ist als so viele Tage (Standard 10; fuer einen Test z. B. 1)'
+        required: false
+        default: '10'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: feed-watchdog
+  cancel-in-progress: false
+
+jobs:
+  waechter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        id: checkout
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fahrplan-Alter prüfen
+        id: alter
+        run: |
+          node scripts/pruefe-alter.mjs \
+            --max-tage "${{ inputs.max_tage || '10' }}" \
+            --feed-datei feed/meta.json \
+            --status-datei status/waechter.json \
+            --grund-datei "$RUNNER_TEMP/grund.txt"
+
+      - name: 'Grund notieren: Prüfung abgebrochen'
+        if: failure() && steps.alter.outcome == 'failure'
+        run: |
+          if [ ! -s "$RUNNER_TEMP/grund.txt" ]; then
+            echo "Die Waechter-Pruefung ist abgebrochen, ohne einen Grund zu nennen — bitte das Protokoll dieses Laufs ansehen." > "$RUNNER_TEMP/grund.txt"
+          fi
+
+      - name: Statuszettel schreiben (läuft IMMER)
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ ! -d .git ]; then
+            echo "Kein Repo vorhanden — Statuszettel kann nicht geschrieben werden."
+            exit 0
+          fi
+          node scripts/status-schreiben.mjs --quelle waechter --grund-datei "$RUNNER_TEMP/grund.txt"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add STATUS.md
+          if [ -d status ]; then git add status; fi
+          if git diff --cached --quiet; then
+            echo "Statuszettel unverändert — kein Commit."
+            exit 0
+          fi
+          git commit -m "chore(status): Wächter-Status ($(date -u +%Y-%m-%d))"
+          geschafft=false
+          for i in 1 2 3; do
+            if git pull --rebase --quiet origin "$GITHUB_REF_NAME" && git push --quiet; then
+              geschafft=true
+              break
+            fi
+            sleep 3
+          done
+          if [ "$geschafft" != "true" ]; then
+            echo "::error::Der Statuszettel konnte nicht abgelegt werden (3 Versuche)."
+            exit 1
+          fi
+          echo "Statuszettel abgelegt."
