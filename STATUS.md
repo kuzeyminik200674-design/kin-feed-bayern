@@ -1,7 +1,7 @@
 # Fahrplan-Roboter — Status
 
 > **Diese Datei schreibt der Roboter selbst** — bitte nicht von Hand ändern.
-> Zuletzt aktualisiert: **20.10.2026, 11:31 Uhr** (Berliner Zeit)
+> Zuletzt aktualisiert: **24.10.2026, 12:37 Uhr** (Berliner Zeit)
 
 ---
 
@@ -12,7 +12,7 @@
 | | |
 |---|---|
 | Zeitpunkt | 20.10.2026, 11:31 Uhr |
-| Fahrplan-Stand in `feed/` | 2026-10-17 (vor 3 Tagen) |
+| Fahrplan-Stand in `feed/` | 2026-10-17 (vor 7 Tagen) |
 | Daten | 26.786 Fahrten · 248 Linien · 3.478 Halte |
 | Nach `feed/` übernommen | ja |
 | Plausibilitäts-Prüfung | an (Schwelle 50 %) |
@@ -27,8 +27,8 @@ Der Wächter lädt nichts herunter. Er prüft nur, ob der Fahrplan in `feed/` zu
 
 | | |
 |---|---|
-| Zeitpunkt | 17.10.2026, 12:23 Uhr |
-| Fahrplan-Stand in `feed/` | 2026-10-10 (7 Tage alt) |
+| Zeitpunkt | 24.10.2026, 12:37 Uhr |
+| Fahrplan-Stand in `feed/` | 2026-10-17 (7 Tage alt) |
 | Erlaubt | höchstens 10 Tage |
 | Laut Daten gültig bis | 2026-12-12 |
 
