@@ -1,7 +1,7 @@
 # Fahrplan-Roboter — Status
 
 > **Diese Datei schreibt der Roboter selbst** — bitte nicht von Hand ändern.
-> Zuletzt aktualisiert: **14.11.2026, 14:14 Uhr** (Berliner Zeit)
+> Zuletzt aktualisiert: **17.11.2026, 14:39 Uhr** (Berliner Zeit)
 
 ---
 
@@ -11,9 +11,9 @@
 
 | | |
 |---|---|
-| Zeitpunkt | 10.11.2026, 13:47 Uhr |
-| Fahrplan-Stand in `feed/` | 2026-11-07 (vor 7 Tagen) |
-| Daten | 22.852 Fahrten · 240 Linien · 2.490 Halte |
+| Zeitpunkt | 17.11.2026, 14:39 Uhr |
+| Fahrplan-Stand in `feed/` | 2026-11-14 (vor 3 Tagen) |
+| Daten | 34.396 Fahrten · 297 Linien · 3.172 Halte |
 | Nach `feed/` übernommen | ja |
 | Plausibilitäts-Prüfung | an (Schwelle 50 %) |
 

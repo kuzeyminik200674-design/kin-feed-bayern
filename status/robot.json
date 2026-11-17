@@ -1,12 +1,12 @@
 {
-  "letzter_lauf": "2026-11-10T12:47:54.439Z",
+  "letzter_lauf": "2026-11-17T13:39:11.764Z",
   "ergebnis": "aktualisiert",
   "grund": null,
   "pruefung": "an",
   "min_prozent": 50,
   "daten_uebernommen": true,
-  "feed_version": "2026-11-07",
-  "fahrten": 22852,
-  "linien": 240,
-  "halte": 2490
+  "feed_version": "2026-11-14",
+  "fahrten": 34396,
+  "linien": 297,
+  "halte": 3172
 }
