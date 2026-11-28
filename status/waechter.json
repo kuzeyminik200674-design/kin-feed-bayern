@@ -1,8 +1,8 @@
 {
-  "letzter_lauf": "2026-11-21T14:26:26.565Z",
+  "letzter_lauf": "2026-11-28T15:17:03.973Z",
   "schwelle_tage": 10,
-  "feed_version": "2026-11-14",
-  "fahrten": 34396,
+  "feed_version": "2026-11-21",
+  "fahrten": 33093,
   "gueltig_bis": "2027-03-31",
   "alter_tage": 7,
   "ergebnis": "ok",
